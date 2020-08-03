@@ -39,7 +39,7 @@ const App = () => {
       case 'REMOVE_STORY':
         return {
           ...state,
-          data: state.filter(s => s.objectID !== action.payload.objectID),
+          data: state.data.filter(s => s.objectID !== action.payload.objectID),
         }
       default:
         throw new Error();
@@ -53,11 +53,9 @@ const App = () => {
   )
 
   useEffect(() => {
-    if (searchTerm === '') return;
-
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    fetch(`${API_ENDPOINT}react`)
+    fetch(`${API_ENDPOINT}${searchTerm}`)
       .then(response => response.json())
       .then(result => {
         dispatchStories({ type: 'STORIES_FETCH_SUCCESS', payload: result.hits })
@@ -66,7 +64,7 @@ const App = () => {
   }, [searchTerm])
 
   const handleRemoveStory = (item) => {
-    dispatchStories({ type: 'SET_STORIES', payload: item });
+    dispatchStories({ type: 'REMOVE_STORY', payload: item });
   };
 
   const handleSearch = (event) => setSearchTerm(event.target.value)
