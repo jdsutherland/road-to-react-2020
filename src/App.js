@@ -49,10 +49,10 @@ const App = () => {
 
       <InputWithLabel
         id="search"
-        label="Search"
         value={searchTerm}
         onInputChange={handleSearch}
       />
+      <strong>Search:</strong>
 
       <hr />
 
@@ -63,14 +63,14 @@ const App = () => {
 
 const InputWithLabel = ({
   id,
-  label,
   type = "text",
   value,
-  onInputChange
+  onInputChange,
+  children
 }) => {
   return (
     <>
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>{children}</label>
       <input
         id={id}
         type={type}
