@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(
@@ -40,22 +40,40 @@ const getAsyncStories = () => {
 }
 
 const App = () => {
+  const storiesReducer = (state, action) => {
+    switch (action.type) {
+      case 'SET_STORIES':
+        return action.payload;
+      case 'REMOVE_STORY':
+        return state.filter(s => s.objectID !== action.payload.objectID);
+      default:
+        throw new Error();
+    }
+  };
+
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React')
-  const [stories, setStories] = useState([])
+  const [stories, dispatchStories] = useReducer(storiesReducer, [])
   const [isLoading, setIsLoading] = useState(false)
+  const [isError, setIsError] = useState(false)
 
   useEffect(() => {
     setIsLoading(true)
     getAsyncStories()
       .then(result => {
-        setStories(result.data.stories)
+        dispatchStories({
+          type: 'SET_STORIES',
+          payload: result.data.stories
+        })
         setIsLoading(false)
       })
+      .catch(() => setIsError(true))
   }, [])
 
   const handleRemoveStory = (item) => {
-    const newStories = stories.filter(s => s.objectID !== item.objectID);
-    setStories(newStories);
+    dispatchStories({
+      type: 'SET_STORIES',
+      payload: item
+    });
   };
 
   const handleSearch = (event) => {
@@ -80,6 +98,8 @@ const App = () => {
       <strong>Search:</strong>
 
       <hr />
+
+      {isError && <p>Something went wrong...</p>}
 
       {isLoading ? (
         <p>Loading...</p>
