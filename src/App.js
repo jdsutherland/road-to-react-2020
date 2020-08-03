@@ -35,7 +35,7 @@ const App = () => {
     <div>
       <h1>My Hacker Stories</h1>
 
-      <Search onSearch={handleSearch} />
+      <Search search={searchTerm} onSearch={handleSearch} />
 
       <hr />
 
@@ -44,11 +44,16 @@ const App = () => {
   );
 }
 
-const Search = ({ onSearch }) => {
+const Search = ({ onSearch, search }) => {
   return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={onSearch} />
+      <input
+        id="search"
+        type="text"
+        value={search}
+        onChange={onSearch}
+      />
     </div>
   );
 }
