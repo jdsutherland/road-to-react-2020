@@ -2,6 +2,7 @@ import React, { useState, useEffect, useReducer, useCallback } from 'react'
 import axios from 'axios';
 
 import './App.css';
+import { ReactComponent as Check } from './check.svg';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
@@ -179,8 +180,12 @@ const Item = ({ item, onRemoveItem }) => {
       <span style={{ width: '10%' }}>{item.num_comments}</span>
       <span style={{ width: '10%' }}>{item.points}</span>
       <span style={{ width: '10%' }}>
-        <button className='button button_small' type='button' onClick={handleRemoveItem}>
-          Dismiss
+        <button
+          className='button button_small'
+          type='button'
+          onClick={handleRemoveItem}
+        >
+          <Check height='18px' width='18px'></Check>
         </button>
       </span>
     </div>
