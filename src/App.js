@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect, useReducer, useCallback } from 'react'
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
@@ -49,10 +49,10 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React')
   const [stories, dispatchStories] = useReducer(
     storiesReducer,
-    { data: [], isLoading: false, isError:  false }
+    { data: [], isLoading: false, isError: false }
   )
 
-  useEffect(() => {
+  const handleFetchStories = useCallback(() => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
     fetch(`${API_ENDPOINT}${searchTerm}`)
@@ -62,6 +62,10 @@ const App = () => {
       })
       .catch(() => dispatchStories({ type: 'STORIES_FETCH_FAILURE' }))
   }, [searchTerm])
+
+  useEffect(() => {
+    handleFetchStories()
+  }, [handleFetchStories])
 
   const handleRemoveStory = (item) => {
     dispatchStories({ type: 'REMOVE_STORY', payload: item });
