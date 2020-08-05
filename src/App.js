@@ -28,6 +28,13 @@ const extractSearchTerm = (url) => url.replace(API_ENDPOINT, '');
 
 const getLastSearches = (urls) =>
   urls
+    .reduce((acc, url, idx) => {
+      const query = extractSearchTerm(url);
+      if (idx === 0) return [...acc, query]
+
+      const previousQuery = acc[acc.length - 1];
+      return (query !== previousQuery) ? [...acc, query] : acc
+    }, [])
     .slice(-6)
     .slice(0, -1)
     .map(extractSearchTerm);
