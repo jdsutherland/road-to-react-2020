@@ -2,7 +2,6 @@ import React, {
   useState,
   useEffect,
   useReducer,
-  useMemo,
   useCallback
 } from 'react'
 import axios from 'axios';
@@ -23,13 +22,6 @@ const useSemiPersistentState = (key, initialState) => {
   }, [key, value])
 
   return [value, setValue]
-};
-
-const getSumComments = stories => {
-  console.log('C');
-  return stories.data.reduce(
-    (result, value) => result + value.num_comments, 0
-  );
 };
 
 const App = () => {
@@ -97,11 +89,9 @@ const App = () => {
     event.preventDefault()
   }
 
-  const sumComments = useMemo(() => getSumComments(stories), [stories]);
-
   return (
     <div className='container'>
-      <h1 className='headline-primary'>My Hacker Stories with {sumComments} comments.</h1>
+      <h1 className='headline-primary'>My Hacker Stories</h1>
 
       <SearchForm
         searchTerm={searchTerm}
