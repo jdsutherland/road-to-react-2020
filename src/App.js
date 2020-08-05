@@ -33,13 +33,29 @@ const getLastSearches = (urls) =>
       if (idx === 0) return [...acc, query]
 
       const previousQuery = acc[acc.length - 1];
-      return (query !== previousQuery) ? [...acc, query] : acc
+      return (query === previousQuery) ? acc : [...acc, query]
     }, [])
     .slice(-6)
     .slice(0, -1)
     .map(extractSearchTerm);
 
 const getUrl = query => `${API_ENDPOINT}${query}`
+
+const LastSearches = ({ lastSearches, onLastSearch }) => {
+  return (
+    <>
+      {lastSearches.map((query, idx) => (
+        <button
+          key={query + idx}
+          type='button'
+          onClick={() => onLastSearch(query)}
+        >
+          {query}
+        </button>
+      ))}
+    </>
+  );
+}
 
 const App = () => {
   const storiesReducer = (state, action) => {
@@ -108,6 +124,7 @@ const App = () => {
   }
 
   const handleLastSearch = (query) => {
+    setSearchTerm(query)
     handleSearch(query)
   };
 
@@ -128,17 +145,10 @@ const App = () => {
         onSearchInput={handleSearchInput}
       />
 
-      {lastSearches.map((query, idx) => (
-        <button
-          key={query + idx}
-          type='button'
-          onClick={() => handleLastSearch(query)}
-        >
-          {query}
-        </button>
-      ))}
-
-      <strong>Search:</strong>
+      <LastSearches
+        lastSearches={lastSearches}
+        onLastSearch={handleLastSearch}
+      />
 
       <hr />
 
