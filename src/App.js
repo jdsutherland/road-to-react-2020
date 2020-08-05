@@ -24,6 +24,12 @@ const useSemiPersistentState = (key, initialState) => {
   return [value, setValue]
 };
 
+const extractSearchTerm = (url) => url.replace(API_ENDPOINT, '');
+
+const getLastSearches = (urls) => urls.slice(-5).map(extractSearchTerm);
+
+const getUrl = query => `${API_ENDPOINT}${query}`
+
 const App = () => {
   const storiesReducer = (state, action) => {
     switch (action.type) {
@@ -57,7 +63,7 @@ const App = () => {
   };
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React')
-  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`)
+  const [urls, setUrls] = useState([getUrl(searchTerm)])
 
   const [stories, dispatchStories] = useReducer(
     storiesReducer,
@@ -68,12 +74,13 @@ const App = () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
     try {
-      const result = await axios.get(url);
+      const lastUrl = urls[urls.length - 1];
+      const result = await axios.get(lastUrl);
       dispatchStories({ type: 'STORIES_FETCH_SUCCESS', payload: result.data.hits })
     } catch {
       dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
     }
-  }, [url])
+  }, [urls])
 
   useEffect(() => {
     handleFetchStories()
@@ -85,9 +92,20 @@ const App = () => {
 
   const handleSearchInput = (event) => setSearchTerm(event.target.value)
   const handleSearchSubmit = (event) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`)
+    handleSearch(searchTerm)
     event.preventDefault()
   }
+
+  const handleLastSearch = (query) => {
+    handleSearch(query)
+  };
+
+  const handleSearch = (query) => {
+    const url = `${API_ENDPOINT}${query}`
+    setUrls(urls.concat(url))
+  };
+
+  const lastSearches = getLastSearches(urls);
 
   return (
     <div className='container'>
@@ -98,6 +116,16 @@ const App = () => {
         onSearchSubmit={handleSearchSubmit}
         onSearchInput={handleSearchInput}
       />
+
+      {lastSearches.map((query, idx) => (
+        <button
+          key={query + idx}
+          type='button'
+          onClick={() => handleLastSearch(query)}
+        >
+          {query}
+        </button>
+      ))}
 
       <strong>Search:</strong>
 
