@@ -6,6 +6,7 @@ import React, {
   useCallback
 } from 'react'
 import axios from 'axios';
+import { sortBy } from 'lodash';
 
 import './App.css';
 import { ReactComponent as Check } from './check.svg';
@@ -174,14 +175,49 @@ const InputWithLabel = ({
   );
 }
 
-const List = ({ list, onRemoveItem }) =>
-  list.map(item => (
-    <Item
-      key={item.objectID}
-      onRemoveItem={onRemoveItem}
-      item={item}
-    />
-  ))
+const SORTS = {
+  NONE: list => list,
+  TITLE: list => sortBy(list, 'title'),
+  AUTHOR: list => sortBy(list, 'author'),
+  COMMENT: list => sortBy(list, 'num_comments').reverse(),
+  POINT: list => sortBy(list, 'point').reverse(),
+};
+
+const List = ({ list, onRemoveItem }) => {
+  const [sort, setSort] = useState('NONE')
+
+  const handleSort = (sortKey) => setSort(sortKey);
+
+  const sortedList = SORTS[sort](list);
+
+  return (
+    <div>
+      <div style={{ display: 'flex' }}>
+        <span style={{ width: '40%' }}>
+          <button type='button' onClick={() => handleSort('TITLE')}>Title</button>
+        </span>
+        <span style={{ width: '30%' }}>
+          <button type='button' onClick={() => handleSort('AUTHOR')}>Author</button>
+        </span>
+        <span style={{ width: '10%' }}>
+          <button type='button' onClick={() => handleSort('COMMENT')}>Comments</button>
+        </span>
+        <span style={{ width: '10%' }}>
+          <button type='button' onClick={() => handleSort('POINT')}>Points</button>
+        </span>
+        <span style={{ width: '10%' }}>Actions </span>
+      </div>
+
+      {sortedList.map(item => (
+        <Item
+          key={item.objectID}
+          onRemoveItem={onRemoveItem}
+          item={item}
+        />
+      ))}
+    </div>
+  )
+}
 
 const Item = ({ item, onRemoveItem }) => {
   const handleRemoveItem = () => onRemoveItem(item);
