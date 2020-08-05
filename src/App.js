@@ -26,7 +26,11 @@ const useSemiPersistentState = (key, initialState) => {
 
 const extractSearchTerm = (url) => url.replace(API_ENDPOINT, '');
 
-const getLastSearches = (urls) => urls.slice(-5).map(extractSearchTerm);
+const getLastSearches = (urls) =>
+  urls
+    .slice(-6)
+    .slice(0, -1)
+    .map(extractSearchTerm);
 
 const getUrl = query => `${API_ENDPOINT}${query}`
 
