@@ -184,11 +184,20 @@ const SORTS = {
 };
 
 const List = ({ list, onRemoveItem }) => {
-  const [sort, setSort] = useState('NONE')
+  const [sort, setSort] = useState({
+    sortKey: 'NONE',
+    isReverse: false,
+  })
 
-  const handleSort = (sortKey) => setSort(sortKey);
+  const handleSort = (sortKey) => {
+    const isReverse = sort.sortKey === sortKey && !sort.isReverse;
+    setSort({sortKey, isReverse});
+  };
 
-  const sortedList = SORTS[sort](list);
+  const sortFn = SORTS[sort.sortKey];
+  const sortedList = sort.isReverse
+    ? sortFn(list).reverse()
+    : sortFn(list)
 
   return (
     <div>
